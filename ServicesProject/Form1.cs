@@ -21,6 +21,8 @@ namespace ServicesProject {
                 Data.ApplicationDbContext.dataSource();
                 _dbContext.connOpen();
                 successlbl.Text = "Success";
+
+
                 _dbContext.connClose();
             }
             catch(Exception) {
@@ -33,7 +35,7 @@ namespace ServicesProject {
         }
 
         private void getClientBtn_Click(object sender, EventArgs e) {
-            List<Client> clients = _dbContext.GetAllClients();
+            List<Client> clients = _dbContext.getAllClients();
 
             if(clients.Count > 0) {
                 foreach(Client client in clients) {
