@@ -11,7 +11,7 @@ namespace ServicesProject.Data {
     public class ApplicationDbContext {
         public static MySqlConnection connection = new MySqlConnection();
 
-        static string connectionString = "server=localhost;uid=root;pwd=yaroslav2005;database=services";
+        static string connectionString = "server=localhost;uid=root;pwd=Maxym_20045;database=services";
 
         public static MySqlConnection dataSource() {
             connection = new MySqlConnection(connectionString);
@@ -53,6 +53,126 @@ namespace ServicesProject.Data {
             }
 
             return clients;
+        }
+
+        public List<(int clientId, string lastName, decimal? amount)> GetClientPayments() {
+            List<(int, string, decimal?)> clientPayments = new List<(int, string, decimal?)>();
+
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT 
+                                    c.client_id, 
+                                    c.last_name, 
+                                    p.amount
+                                FROM clients c
+                                LEFT JOIN payments p USING(client_id)
+                                UNION SELECT 
+	                                c.client_id, 
+                                    c.last_name, 
+                                    p.amount
+                                FROM clients c
+                                RIGHT JOIN payments p USING (client_id)
+                                WHERE c.client_id IS NULL";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            int clientId = Convert.ToInt32(reader["client_id"]);
+                            string lastName = reader["last_name"].ToString();
+                            decimal? amount = reader["amount"] == DBNull.Value ? null : (decimal?)Convert.ToDecimal(reader["amount"]);
+
+                            clientPayments.Add((clientId, lastName, amount));
+                        }
+                    }
+                }
+            }
+
+            return clientPayments;
+        }
+
+        public List<(string eventName, int totalGuests, int? quantity)> GetEventServiceQuantities() {
+            List<(string, int, int?)> eventServiceQuantities = new List<(string, int, int?)>();
+
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT 
+                                    e.event_name,
+                                    e.total_guests,
+                                    es.quantity
+                                FROM events e
+                                RIGHT JOIN event_services es ON e.event_id = es.event_id";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            string eventName = reader["event_name"].ToString();
+                            int totalGuests = Convert.ToInt32(reader["total_guests"]);
+                            int? quantity = reader["quantity"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["quantity"]);
+
+                            eventServiceQuantities.Add((eventName, totalGuests, quantity));
+                        }
+                    }
+                }
+            }
+
+            return eventServiceQuantities;
+        }
+
+        public List<(int paymentId, decimal? amount, string paymentMethodName)> GetPaymentsWithMethod() {
+            List<(int, decimal?, string)> paymentsWithMethod = new List<(int, decimal?, string)>();
+
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT 
+                                    p.payment_id,
+                                    p.amount,
+                                    pm.name
+                                FROM payments p
+                                LEFT JOIN payment_method pm ON p.payment_method_id = pm.payment_method_id";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            int paymentId = reader["payment_id"] == DBNull.Value ? -1 : Convert.ToInt32(reader["payment_id"]);
+                            decimal? amount = reader["amount"] == DBNull.Value ? null : (decimal?)Convert.ToDecimal(reader["amount"]);
+                            string paymentMethodName = reader["name"].ToString();
+
+                            paymentsWithMethod.Add((paymentId, amount, paymentMethodName));
+                        }
+                    }
+                }
+            }
+
+            return paymentsWithMethod;
+        }
+
+        public List<(int vendorServiceId, string vendorName, string serviceName)> GetVendorServices() {
+            List<(int, string, string)> vendorServices = new List<(int, string, string)>();
+
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT 
+                                    vs.vendor_service_id,
+                                    v.vendor_name,
+                                    s.service_name
+                                FROM vendor_services vs
+                                RIGHT JOIN services s USING(service_id)
+                                RIGHT JOIN vendors v USING(vendor_id)";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            int vendorServiceId = reader["vendor_service_id"] == DBNull.Value ? -1 : Convert.ToInt32(reader["vendor_service_id"]);
+                            string vendorName = reader["vendor_name"].ToString();
+                            string serviceName = reader["service_name"].ToString();
+
+                            vendorServices.Add((vendorServiceId, vendorName, serviceName));
+                        }
+                    }
+                }
+            }
+
+            return vendorServices;
         }
 
         public static void InsertRandomClients() {
@@ -182,7 +302,7 @@ namespace ServicesProject.Data {
         public static void InsertVendorServices() {
             var faker = new Faker<VendorService>()
                 .RuleFor(vs => vs.VendorId, f => f.Random.Number(1, 1000))
-                .RuleFor(vs => vs.ServiceId, f => f.Random.Number(1, 139));
+                .RuleFor(vs => vs.ServiceId, f => f.Random.Number(1, 137));
 
             var numberOfVendorServices = 1000;
             var vendorServices = faker.Generate(numberOfVendorServices);
@@ -205,8 +325,8 @@ namespace ServicesProject.Data {
 
         public static void InsertRandomEventServices() {
             var faker = new Faker<EventService>()
-                .RuleFor(es => es.EventId, f => f.Random.Number(1, 32))
-                .RuleFor(es => es.ServiceId, f => f.Random.Number(1, 139))
+                .RuleFor(es => es.EventId, f => f.Random.Number(1, 136))
+                .RuleFor(es => es.ServiceId, f => f.Random.Number(1, 138))
                 .RuleFor(es => es.Quantity, f => f.Random.Number(1, 10));
 
             var numberOfEventServices = 1000;

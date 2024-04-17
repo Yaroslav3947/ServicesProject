@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Contexts;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -22,6 +23,13 @@ namespace ServicesProject {
                 _dbContext.connOpen();
                 successlbl.Text = "Success";
 
+
+
+                List<(int, string, string)> vendorServices = _dbContext.GetVendorServices();
+
+                foreach(var service in vendorServices) {
+                    Console.WriteLine($"{service.Item1}, {service.Item2}, {service.Item3}");
+                }
 
                 _dbContext.connClose();
             }
