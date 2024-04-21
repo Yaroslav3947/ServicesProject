@@ -175,6 +175,267 @@ namespace ServicesProject.Data {
             return vendorServices;
         }
 
+        public void CreateVendorsStartingWithAView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"
+                    CREATE VIEW VendorsStartingWithA1 AS
+                    SELECT * FROM vendors
+                    WHERE vendor_name LIKE 'A%';
+                ";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateVendorsStartingWithAEmail(int vendorId, string newEmail) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"UPDATE VendorsStartingWithA 
+                                 SET email = @newEmail
+                                 WHERE vendor_id = @vendorId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@newEmail", newEmail);
+                    cmd.Parameters.AddWithValue("@vendorId", vendorId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetVendorStartingWithAById(int vendorId) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM VendorsStartingWithA WHERE vendor_id = @vendorId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@vendorId", vendorId);
+
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($"{reader["vendor_id"]}, {reader["vendor_name"]}, {reader["contact_person"]}, {reader["phone"]}, {reader["email"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DeleteVendorStartingWithA(int vendorId) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"DELETE FROM VendorsStartingWithA WHERE vendor_id = @vendorId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@vendorId", vendorId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetVendorsStartingWithA() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM VendorsStartingWithA";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($" {reader["vendor_id"]}, {reader["vendor_name"]}, {reader["contact_person"]}, {reader["phone"]}, {reader["email"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void CreatePaymentsView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"
+                    CREATE VIEW PaymentsView1 AS
+                    SELECT * FROM payments
+                    WHERE payment_method_id = 5;
+                ";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetPaymentsView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM PaymentsView1";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($"{reader["payment_id"]}, {reader["client_id"]}, {reader["amount"]}, {reader["payment_date"]}, Payment Method ID: {reader["payment_method_id"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void CreateServicesView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"
+                    CREATE VIEW ServicesView2 AS
+                    SELECT * FROM services
+                    WHERE cost > 2000.0 AND cost < 3500.0;
+                ";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetServicesView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM ServicesView2";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+
+                            Console.WriteLine($"{reader["service_id"]}, {reader["service_name"]}, {reader["description"]}, {reader["cost"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateServicesView1Cost(int serviceId, decimal newCost) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"UPDATE ServicesView1 
+                                 SET cost = @newCost
+                                 WHERE service_id = @serviceId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@newCost", newCost);
+                    cmd.Parameters.AddWithValue("@serviceId", serviceId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetServicesView1() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM ServicesView1";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($", {reader["service_id"]}, Service Name: {reader["service_name"]}, Description: {reader["description"]}, Cost: {reader["cost"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void DeleteFromServicesView1(int serviceId) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"DELETE FROM ServicesView1 WHERE service_id = @serviceId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@serviceId", serviceId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetServicesView1ById(int serviceId) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM ServicesView1 WHERE service_id = @serviceId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@serviceId", serviceId);
+
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($"{reader["service_id"]}, {reader["service_name"]}, {reader["description"]}, {reader["cost"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void CreateEventsView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"
+                    CREATE VIEW EventsView1 AS
+                    SELECT * FROM events
+                    ORDER BY event_name;
+                ";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetEventsView() {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM EventsView1";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($" {reader["event_id"]}, {reader["client_id"]}, {reader["event_name"]}, {reader["event_date"]}, {reader["venue"]}, {reader["total_guests"]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateEventsViewVenue(int eventId, string newVenue) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"UPDATE EventsView 
+                                 SET venue = @newVenue
+                                 WHERE event_id = @eventId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@newVenue", newVenue);
+                    cmd.Parameters.AddWithValue("@eventId", eventId);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void GetEventFromViewById(int eventId) {
+            using(MySqlConnection connection = new MySqlConnection(connectionString)) {
+                string query = @"SELECT * FROM EventsView WHERE event_id = @eventId";
+
+                using(MySqlCommand cmd = new MySqlCommand(query, connection)) {
+                    cmd.Parameters.AddWithValue("@eventId", eventId);
+
+                    connection.Open();
+                    using(MySqlDataReader reader = cmd.ExecuteReader()) {
+                        while(reader.Read()) {
+                            Console.WriteLine($"{reader["event_id"]}, {reader["client_id"]}, {reader["event_name"]}, {reader["event_date"]}, {reader["venue"]}, {reader["total_guests"]}");
+                        }
+                    }
+                }
+            }
+        }
+
         public static void InsertRandomClients() {
             var faker = new Faker<Client>()
                 .RuleFor(c => c.FirstName, f => f.Name.FirstName())

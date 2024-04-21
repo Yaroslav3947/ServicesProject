@@ -25,11 +25,9 @@ namespace ServicesProject {
 
 
 
-                List<(int, string, string)> vendorServices = _dbContext.GetVendorServices();
+                _dbContext.UpdateEventsViewVenue(34, "NewVenue");
 
-                foreach(var service in vendorServices) {
-                    Console.WriteLine($"{service.Item1}, {service.Item2}, {service.Item3}");
-                }
+                _dbContext.GetEventFromViewById(34);
 
                 _dbContext.connClose();
             }
